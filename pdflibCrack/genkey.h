@@ -3,8 +3,27 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <time.h>
-#define __ROR1__(x) ((((x)<<7)|((x)>>1))&0xff)
-#define __ROL4__(x) (((x)>>31)|((x)<<1))
+#if 0
+    #define __ROR1__(x) ((((x)<<7)|((x)>>1))&0xff)
+    #define __ROL4__(x) (((x)>>31)|((x)<<1))
+#else
+    unsigned int __fastcall __ROL4__(int ecx)
+    {
+        asm volatile
+        (
+                    "rol %ecx\n"
+                    "mov %ecx,%eax"
+        );
+    }
+    unsigned char __fastcall __ROR1__(unsigned char ecx)
+    {
+        asm volatile
+        (
+                    "ror %cl\n"
+                    "mov %cl,%al"
+        );
+    }
+#endif
 unsigned char byte_103E6018[32]=
 {
     50, 51, 52, 53, 54, 55, 56, 57, 65, 66, 67, 68, 69, 70, 71, 72, 74, 75, 76, 77, 78, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90
@@ -53,7 +72,6 @@ char *genKey()
         }
     strncat(cmKey,cKey+29,6);
     v27 = sub_10183AD0(cmKey, 31);
-    fflush(stdout);
     for (int v29=0;v29<6;v29++)
         {
             cKey[22+v29]=byte_103E6018[v27 & 0x1F];
